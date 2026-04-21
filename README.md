@@ -1,96 +1,51 @@
-<![CDATA[# VibeCheck ✨
+# VibeCheck ✨
 
-> *"Your vibe is your digital signature."*
+> **Your vibe is your digital signature.**
 
-**VibeCheck** is a full-stack AI-powered mood board and playlist generator. Describe how you feel, and VibeCheck uses Google's Gemini AI to analyze your mood, generate aesthetic tags, create a unique AI-generated mood board image, and suggest a Spotify playlist — all in seconds.
+VibeCheck is a full-stack AI-powered mood board and playlist generator. Describe how you feel, and VibeCheck uses **Google Gemini AI** to analyze your mood, generate a unique AI mood board image, and suggest a matching Spotify playlist — all in seconds.
 
-🌐 **Live Demo**: [https://vibecheck-bb61f.web.app](https://vibecheck-bb61f.web.app)
-
----
-
-## 📸 Screenshots
-
-| Home Page | Result Page |
-|-----------|-------------|
-| Big bold typography with glassmorphism input card | AI-generated mood board with aesthetic tags and Spotify integration |
+🌐 **Live App** → [vibecheck-bb61f.web.app](https://vibecheck-bb61f.web.app)
 
 ---
 
 ## ✨ Features
 
-- 🎨 **AI-Powered Vibe Analysis** — Google Gemini analyzes your mood description and extracts aesthetic tags (e.g., *cottagecore*, *dark academia*, *golden hour*, *neon*)
-- 🖼️ **AI-Generated Mood Board** — Unique images generated via Pollinations.ai based on your vibe tags
-- 🎵 **Spotify Integration** — Automatically generates a Spotify search query matching your mood
-- 🔐 **Google Authentication** — Sign in with Google to save and revisit your vibes
-- 💾 **Vibe Archive** — Save your favorite vibes to Firestore and browse your history
-- 📱 **Fully Responsive** — Premium glassmorphism UI that looks stunning on desktop and mobile
-- ⚡ **Resilient Design** — Graceful loading states, error handling, and retry mechanisms
+- 🎨 **AI Vibe Analysis** — Gemini AI extracts aesthetic tags like *cottagecore*, *golden hour*, *dark academia*
+- 🖼️ **AI Mood Board** — Unique images generated in real-time via Pollinations.ai
+- 🎵 **Spotify Match** — Auto-generates a Spotify search query for your vibe
+- 🔐 **Google Sign-In** — OAuth 2.0 authentication via Firebase
+- 💾 **Vibe Archive** — Save favorites to Cloud Firestore and browse your history
+- 📱 **Responsive & Premium** — Glassmorphism UI with DM Sans typography
+- ⚡ **Resilient** — Graceful loading, error handling, and retry mechanisms
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend
-| Technology | Purpose |
-|---|---|
-| **React 19** | UI framework |
-| **Vite 8** | Build tool & dev server |
-| **Tailwind CSS v4** | Utility-first styling |
-| **React Router v7** | Client-side routing |
-| **Axios** | HTTP client for API calls |
-| **Firebase Auth** | Google sign-in authentication |
-| **Firebase Hosting** | Frontend deployment |
+**Frontend** — React 19 · Vite 8 · Tailwind CSS v4 · React Router · Axios · Firebase Auth · Firebase Hosting
 
-### Backend
-| Technology | Purpose |
-|---|---|
-| **FastAPI** | Python web framework |
-| **Google Gemini API** | AI mood analysis (REST API) |
-| **Pollinations.ai** | AI image generation (no API key needed) |
-| **Firebase Admin SDK** | Firestore database operations |
-| **Uvicorn** | ASGI server |
-| **Docker** | Containerized deployment |
-| **Render** | Backend hosting (free tier) |
+**Backend** — Python 3.11 · FastAPI · Uvicorn · Pydantic · Docker · Render
+
+**Cloud Services** — Firebase Hosting (CDN) · Firebase Auth (OAuth) · Cloud Firestore (NoSQL DB) · Gemini API (AI) · Pollinations.ai (Image Gen) · Render (Docker Hosting)
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ How It Works
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    FRONTEND (React)                      │
-│              Firebase Hosting (Static)                   │
-│                                                         │
-│  ┌──────────┐  ┌──────────┐  ┌───────────┐             │
-│  │  Home    │  │  Result  │  │  History  │             │
-│  │  Page    │  │  Page    │  │  Page     │             │
-│  └────┬─────┘  └────┬─────┘  └─────┬─────┘             │
-│       │              │              │                    │
-│       ▼              ▼              ▼                    │
-│  ┌──────────────────────────────────────┐               │
-│  │     AuthContext (Firebase Auth)      │               │
-│  └──────────────────────────────────────┘               │
-└────────────────────┬────────────────────────────────────┘
-                     │ HTTPS (Axios)
-                     ▼
-┌─────────────────────────────────────────────────────────┐
-│                   BACKEND (FastAPI)                      │
-│                  Render (Docker)                         │
-│                                                         │
-│  ┌────────────┐  ┌─────────────┐  ┌──────────────┐     │
-│  │ POST /vibe │  │POST /save   │  │GET /history  │     │
-│  └─────┬──────┘  └──────┬──────┘  └───────┬──────┘     │
-│        │                │                 │              │
-│   ┌────▼────┐     ┌─────▼──────┐   ┌─────▼──────┐     │
-│   │ Gemini  │     │ Firestore  │   │ Firestore  │     │
-│   │  API    │     │  (save)    │   │  (query)   │     │
-│   └────┬────┘     └────────────┘   └────────────┘     │
-│        │                                                │
-│   ┌────▼──────────┐  ┌──────────────┐                  │
-│   │Pollinations.ai│  │Spotify Search│                  │
-│   │ (Image Gen)   │  │  (URL Build) │                  │
-│   └───────────────┘  └──────────────┘                  │
-└─────────────────────────────────────────────────────────┘
+User types mood → Frontend sends POST to Backend API
+                         ↓
+              Backend calls Gemini AI (REST API)
+              Gemini returns aesthetic tags + Spotify query
+                         ↓
+              Backend builds Pollinations.ai image URL
+              Backend builds Spotify search URL
+                         ↓
+              Backend sends JSON response to Frontend
+                         ↓
+              Frontend displays mood board + tags + Spotify button
+                         ↓
+              User clicks "Archive" → saved to Cloud Firestore
 ```
 
 ---
@@ -99,143 +54,96 @@
 
 ```
 VibeCheck/
+│
 ├── backend/
-│   ├── main.py                 # FastAPI routes & CORS config
-│   ├── gemini.py               # Gemini REST API integration
-│   ├── image.py                # Pollinations.ai URL builder
-│   ├── spotify.py              # Spotify search URL builder
-│   ├── firestore_client.py     # Firebase Admin Firestore operations
-│   ├── models.py               # Pydantic request/response models
-│   ├── requirements.txt        # Python dependencies
-│   ├── Dockerfile              # Docker config for Render
-│   └── .env                    # Environment variables (gitignored)
+│   ├── main.py                  # FastAPI routes + CORS
+│   ├── gemini.py                # Gemini REST API calls
+│   ├── image.py                 # Pollinations.ai URL builder
+│   ├── spotify.py               # Spotify search URL builder
+│   ├── firestore_client.py      # Firestore CRUD operations
+│   ├── models.py                # Pydantic models
+│   ├── requirements.txt         # Python dependencies
+│   └── Dockerfile               # Container config for Render
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.jsx      # Glassmorphism navigation bar
-│   │   │   ├── MoodBoard.jsx   # AI image display with loading/retry
-│   │   │   ├── LoadingState.jsx # Fullscreen loading overlay
-│   │   │   └── VibeCard.jsx    # History card with modal preview
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx  # Global auth state provider
-│   │   ├── pages/
-│   │   │   ├── Home.jsx        # Main input page with hero section
-│   │   │   ├── Result.jsx      # Vibe results with tags & image
-│   │   │   └── History.jsx     # Saved vibes archive grid
-│   │   ├── firebase.js         # Firebase client configuration
-│   │   ├── App.jsx             # Router & layout shell
-│   │   ├── main.jsx            # React entry point
-│   │   └── index.css           # Tailwind v4 imports & animations
-│   ├── index.html              # HTML template with DM Sans font
-│   ├── firebase.json           # Firebase Hosting config
-│   ├── postcss.config.js       # PostCSS with @tailwindcss/postcss
-│   ├── .env                    # Frontend env variables (gitignored)
-│   └── package.json
+│   │   ├── components/          # Navbar, MoodBoard, LoadingState, VibeCard
+│   │   ├── context/             # AuthContext (global auth state)
+│   │   ├── pages/               # Home, Result, History
+│   │   ├── firebase.js          # Firebase client config
+│   │   ├── App.jsx              # Router + layout
+│   │   └── index.css            # Tailwind v4 + custom animations
+│   ├── index.html
+│   ├── firebase.json            # Firebase Hosting config
+│   └── postcss.config.js
 │
-├── firestore.rules             # Firestore security rules
-├── .gitignore
+├── firestore.rules              # Firestore security rules
 └── README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-### Prerequisites
-
-- **Node.js** v18+ and npm
-- **Python** 3.11+
-- **Firebase Project** with Authentication and Firestore enabled
-- **Google AI Studio** API key for Gemini
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/Kaviya-Ganesh/VibeCheck.git
-cd VibeCheck
-```
-
-### 2. Backend Setup
+### Backend
 
 ```bash
 cd backend
-
-# Create a virtual environment
-python -m venv venv
-venv\Scripts\activate        # Windows
-# source venv/bin/activate   # macOS/Linux
-
-# Install dependencies
+python -m venv venv && venv\Scripts\activate
 pip install -r requirements.txt
-
-# Create .env file
-echo GEMINI_API_KEY=your_gemini_api_key_here > .env
-echo GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json >> .env
 ```
 
-> **Note**: Place your Firebase `serviceAccountKey.json` in the `backend/` directory. You can download it from [Firebase Console](https://console.firebase.google.com/) → Project Settings → Service Accounts → Generate New Private Key.
+Create `backend/.env`:
+
+```
+GEMINI_API_KEY=your_key_here
+GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json
+```
 
 ```bash
-# Run the backend
 uvicorn main:app --reload --port 8080
 ```
 
-### 3. Frontend Setup
+### Frontend
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Create .env file with your Firebase config
 ```
 
 Create `frontend/.env`:
-```env
-VITE_FIREBASE_API_KEY=your_firebase_api_key
+
+```
+VITE_FIREBASE_API_KEY=your_key
 VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your-project-id
 VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_BACKEND_URL=http://localhost:8080
 ```
 
 ```bash
-# Run the frontend
 npm run dev
 ```
-
-The app will be available at `http://localhost:5173`.
 
 ---
 
 ## 🌐 Deployment
 
-### Backend → Render
-
-1. Push code to GitHub
-2. Create a new **Web Service** on [Render](https://render.com)
-3. Connect your GitHub repo, set root directory to `backend/`
-4. Set environment to **Docker**
-5. Add environment variables:
-   - `GEMINI_API_KEY` — Your Google AI Studio API key
-   - `FIREBASE_CREDENTIALS_JSON` — Base64-encoded `serviceAccountKey.json`
-
-   To encode your service account key:
-   ```powershell
-   [Convert]::ToBase64String([System.IO.File]::ReadAllBytes("backend/serviceAccountKey.json"))
-   ```
-
-### Frontend → Firebase Hosting
+**Frontend** → Firebase Hosting
 
 ```bash
-cd frontend
-npm run build
-npx firebase-tools deploy --only hosting
+cd frontend && npm run build && npx firebase-tools deploy --only hosting
 ```
+
+**Backend** → Render (Docker)
+
+Push to GitHub → Render auto-detects → Builds Docker image → Deploys container
+
+Environment variables on Render:
+- `GEMINI_API_KEY` — Google AI Studio API key
+- `FIREBASE_CREDENTIALS_JSON` — Base64-encoded service account JSON
 
 ---
 
@@ -243,82 +151,46 @@ npx firebase-tools deploy --only hosting
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/health` | Health check — shows if Gemini & Firebase are configured |
-| `GET` | `/debug/vibe` | Debug endpoint — tests Gemini with a sample prompt |
-| `POST` | `/vibe` | Analyze mood text → returns tags, image URL, Spotify link |
-| `POST` | `/vibe/save` | Save a vibe to Firestore for the authenticated user |
-| `GET` | `/vibe/history/{user_id}` | Fetch all saved vibes for a user |
+| `GET`  | `/health` | Health check (shows config status) |
+| `POST` | `/vibe` | Analyze mood → returns tags, image, Spotify link |
+| `POST` | `/vibe/save` | Save a vibe to Firestore |
+| `GET`  | `/vibe/history/{user_id}` | Fetch saved vibes for a user |
 
-### Example Request
+**Example:**
 
 ```bash
 curl -X POST https://vibecheck-api-c1rc.onrender.com/vibe \
   -H "Content-Type: application/json" \
-  -d '{"text": "sunset on a rooftop with jazz music", "user_id": "anonymous"}'
+  -d '{"text": "sunset on a rooftop with jazz", "user_id": "anon"}'
 ```
-
-### Example Response
-
-```json
-{
-  "tags": ["golden hour", "jazz", "rooftop", "warm", "nostalgic"],
-  "spotify_query": "https://open.spotify.com/search/rooftop%20jazz%20sunset%20vibes",
-  "image_url": "https://image.pollinations.ai/prompt/golden%20hour%20jazz%20rooftop%20warm%20nostalgic%20aesthetic%20mood%20board%20soft%20dreamy?width=600&height=600&nologo=true&seed=42",
-  "vibe_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "created_at": "2026-04-21T17:00:00+00:00"
-}
-```
-
----
-
-## 🎨 Design Philosophy
-
-VibeCheck follows a **premium, editorial design** language:
-
-- **Typography**: DM Sans with extra-bold weights and wide letter-spacing for a high-fashion feel
-- **Layout**: Glassmorphism cards with `backdrop-blur` and soft white overlays
-- **Colors**: Soft pastel mesh gradients (pink, lavender, sky blue) with high-contrast black buttons
-- **Animations**: Fade-in-up entrances, hover scale transforms, and pulsing loading states
-- **Micro-interactions**: Glowing card auras on hover, button lifts on hover, shimmer effects
 
 ---
 
 ## 🔒 Security
 
-- **Firestore Rules**: Enforce `user_id` ownership — users can only read/write their own vibes
-- **Environment Variables**: All API keys and credentials are stored as environment variables, never in source code
-- **`.gitignore`**: Sensitive files (`serviceAccountKey.json`, `.env`) are excluded from version control
-- **CORS**: Configured to allow cross-origin requests from the frontend domain
+- API keys stored as **environment variables**, never in source code
+- `.gitignore` excludes `.env` and `serviceAccountKey.json`
+- Firestore rules enforce **user-level data isolation**
+- Firebase client keys are safe to expose — security is enforced server-side
 
 ---
 
-## 🐛 Troubleshooting
+## 🐛 Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Blank white screen | Check browser console (F12). Usually means Firebase config is empty in `.env` |
-| Same tags every time | Gemini API key isn't set on Render. Check `/health` endpoint |
-| Image not loading | Pollinations.ai may be under heavy load. Wait or click "try again" |
-| Archive shows empty | Firestore composite index may be needed. Backend sorts in Python to avoid this |
-| Backend slow first request | Render free tier sleeps after inactivity. First request takes ~30s to spin up |
-
----
-
-## 📜 License
-
-This project is built for educational and demonstration purposes.
+| Problem | Fix |
+|---------|-----|
+| Blank white screen | Firebase keys missing in `frontend/.env` |
+| Same tags every time | `GEMINI_API_KEY` not set on Render |
+| Image won't load | Pollinations.ai is busy — click "try again" |
+| Archive is empty | Backend redeploying — wait 2 min and retry |
+| Slow first load | Render free tier cold start (~30s) |
 
 ---
 
 ## 👩‍💻 Author
 
-**Kaviya Ganesh**
-
-- GitHub: [@Kaviya-Ganesh](https://github.com/Kaviya-Ganesh)
+**Kaviya Ganesh** — [@Kaviya-Ganesh](https://github.com/Kaviya-Ganesh)
 
 ---
 
-<p align="center">
-  Made with ✨ vibes and ☕ caffeine
-</p>
-]]>
+<p align="center">Made with ✨ vibes and ☕ caffeine</p>
