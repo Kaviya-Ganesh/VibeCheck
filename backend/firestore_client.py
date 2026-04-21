@@ -78,11 +78,10 @@ def get_user_vibes(user_id: str) -> list:
     if not db:
         raise Exception("Firestore is not initialized. Check your Firebase credentials.")
     
-    # Query vibes collection matching user_id and sort by creation time
+    # Query vibes collection matching user_id (no order_by to avoid needing a composite index)
     docs = (
         db.collection("vibes")
         .where(filter=firestore.FieldFilter("user_id", "==", user_id))
-        .order_by("created_at", direction=firestore.Query.DESCENDING)
         .stream()
     )
     
@@ -95,5 +94,8 @@ def get_user_vibes(user_id: str) -> list:
         if hasattr(vibe_dict.get("created_at"), "isoformat"):
             vibe_dict["created_at"] = vibe_dict["created_at"].isoformat()
         vibes_list.append(vibe_dict)
+    
+    # Sort by created_at descending in Python (avoids Firestore composite index requirement)
+    vibes_list.sort(key=lambda v: v.get("created_at", ""), reverse=True)
         
     return vibes_list
