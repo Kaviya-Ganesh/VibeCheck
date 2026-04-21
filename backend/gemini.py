@@ -1,16 +1,18 @@
 import os
 import json
 import logging
-import google.generativeai as genai
+import requests
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+
 def analyze_vibe(text: str) -> dict:
     """
-    Analyzes the user's vibe description using the Gemini API and returns
-    aesthetic tags and a Spotify search query.
+    Analyzes the user's vibe description using the Gemini REST API directly
+    and returns aesthetic tags and a Spotify search query.
     """
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -18,33 +20,6 @@ def analyze_vibe(text: str) -> dict:
         return _fallback_vibe("No API key")
 
     try:
-        genai.configure(api_key=api_key)
-        
-        # Try multiple model names for compatibility
-        model = None
-        model_names = [
-            'gemini-2.0-flash',
-            'gemini-1.5-flash',
-            'gemini-1.5-flash-latest',
-            'gemini-pro',
-        ]
-        
-        last_error = None
-        for model_name in model_names:
-            try:
-                model = genai.GenerativeModel(model_name)
-                # Quick test to verify the model works
-                logger.info(f"Trying model: {model_name}")
-                break
-            except Exception as e:
-                last_error = e
-                logger.warning(f"Model {model_name} not available: {e}")
-                continue
-        
-        if model is None:
-            logger.error(f"No Gemini model available. Last error: {last_error}")
-            return _fallback_vibe(f"No model available: {last_error}")
-        
         prompt = (
             "You are a vibe analyzer. Given a mood description, return "
             "ONLY a JSON object with two fields:\n"
@@ -57,8 +32,35 @@ def analyze_vibe(text: str) -> dict:
         
         full_text = f"{prompt}\n\nMood description: {text}"
         
-        response = model.generate_content(full_text)
-        response_text = response.text.strip()
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": full_text}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 1.0,
+                "maxOutputTokens": 256
+            }
+        }
+        
+        response = requests.post(
+            f"{GEMINI_API_URL}?key={api_key}",
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            logger.error(f"Gemini API returned status {response.status_code}: {response.text[:500]}")
+            return _fallback_vibe(f"API status {response.status_code}")
+        
+        result = response.json()
+        
+        # Extract the text from the response
+        response_text = result["candidates"][0]["content"]["parts"][0]["text"].strip()
         
         logger.info(f"Gemini raw response: {response_text[:200]}")
         
@@ -80,7 +82,7 @@ def analyze_vibe(text: str) -> dict:
         
         # Validate that we got actual data
         if not isinstance(tags, list) or len(tags) == 0 or not spotify_query:
-            logger.warning("Empty or invalid data format returned from Gemini, using fallback.")
+            logger.warning("Empty or invalid data format returned from Gemini.")
             return _fallback_vibe("Empty response from model")
             
         logger.info(f"Gemini analysis successful: tags={tags}")
@@ -90,7 +92,7 @@ def analyze_vibe(text: str) -> dict:
         }
         
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse JSON response from Gemini: {e}. Response was: {response_text}")
+        logger.error(f"Failed to parse JSON from Gemini: {e}")
         return _fallback_vibe(f"JSON parse error: {e}")
     except Exception as e:
         logger.error(f"Error calling Gemini API: {e}")
