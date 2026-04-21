@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // By default, strictly deny access to all collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Rules specifically for the 'vibes' collection
+    match /vibes/{documentId} {
+      // Allow reading only if the user is signed in and owns the document
+      allow read: if request.auth != null && resource.data.user_id == request.auth.uid;
+      
+      // Allow creating a vibe only if signed in and the incoming user_id matches the auth token
+      allow create: if request.auth != null && request.resource.data.user_id == request.auth.uid;
+      
+      // Allow updating or deleting only if the existing resource is owned by the user making the request
+      allow update, delete: if request.auth != null && resource.data.user_id == request.auth.uid;
+    }
+    
+  }
+}

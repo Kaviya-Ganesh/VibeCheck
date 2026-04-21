@@ -1,0 +1,10 @@
+/.env
+/backend/.env
+/frontend/.env
+serviceAccountKey.json
+/backend/serviceAccountKey.json
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.DS_Store
