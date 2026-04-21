@@ -12,18 +12,35 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Check if Firebase config is actually filled in
+const isConfigValid = firebaseConfig.apiKey && firebaseConfig.projectId;
 
-// Export Auth instance and Provider
-export const auth = getAuth(app);
+let app = null;
+let auth = null;
+let db = null;
+
+if (isConfigValid) {
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } catch (error) {
+    console.error("Firebase initialization failed:", error);
+  }
+} else {
+  console.warn("Firebase config is missing. Auth and Firestore will be disabled. Fill in your frontend/.env file.");
+}
+
 const googleProvider = new GoogleAuthProvider();
 
-// Export Firestore db instance
-export const db = getFirestore(app);
+export { auth, db };
 
 // Authentication Helpers
 export const signInWithGoogle = async () => {
+    if (!auth) {
+        alert("Firebase is not configured. Please add your Firebase keys to the .env file.");
+        return null;
+    }
     try {
         const result = await signInWithPopup(auth, googleProvider);
         return result.user;
@@ -34,6 +51,7 @@ export const signInWithGoogle = async () => {
 };
 
 export const signOut = async () => {
+    if (!auth) return;
     try {
         await firebaseSignOut(auth);
     } catch (error) {

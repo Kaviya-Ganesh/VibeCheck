@@ -1,7 +1,11 @@
 import uuid
 from datetime import datetime, timezone
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
+# Load .env file for local development
+load_dotenv()
 
 from models import VibeRequest, VibeResponse, SavedVibe
 from gemini import analyze_vibe
@@ -19,6 +23,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/health")
+async def health_check():
+    """Quick health check to verify the backend is running and configured."""
+    import os
+    return {
+        "status": "ok",
+        "gemini_configured": bool(os.environ.get("GEMINI_API_KEY")),
+        "firebase_configured": bool(
+            os.environ.get("FIREBASE_CREDENTIALS_JSON") or 
+            os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+        )
+    }
 
 @app.post("/vibe", response_model=VibeResponse)
 async def generate_vibe(request: VibeRequest):

@@ -14,42 +14,39 @@ export default function Navbar() {
           
           {/* Brand Identity / Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-300">
-              VibeCheck ✨
+            <Link to="/" className="text-3xl font-black tracking-tighter text-gray-900 group">
+              Vibe<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 group-hover:from-pink-500 group-hover:to-purple-500 transition-all duration-500">Check</span> ✨
             </Link>
           </div>
 
-          {/* Desktop Navigation Navigation */}
-          <div className="hidden md:flex flex-1 items-center justify-end space-x-6">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex flex-1 items-center justify-end space-x-8">
             {currentUser ? (
               <>
-                <Link to="/history" className="text-gray-800 hover:text-purple-600 font-medium transition-colors">
-                  History
+                <Link to="/history" className="text-gray-500 hover:text-black font-bold text-sm uppercase tracking-widest transition-colors">
+                  archive
                 </Link>
                 
-                <div className="flex items-center space-x-3 pl-4 border-l border-white/50">
-                  <span className="text-sm font-medium text-gray-800 hidden lg:block">
-                    {currentUser.displayName}
-                  </span>
+                <div className="flex items-center space-x-4 pl-6 border-l border-gray-100">
                   <img 
-                    src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName}&background=random`} 
-                    alt="User Avatar" 
-                    className="h-9 w-9 rounded-full ring-2 ring-purple-300 shadow-sm"
+                    src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName}&background=fdf2f8&color=db2777`} 
+                    alt="User" 
+                    className="h-10 w-10 rounded-full ring-4 ring-pink-50 shadow-sm"
                   />
                   <button 
                     onClick={signOut}
-                    className="px-4 py-2 text-sm font-medium rounded-full bg-white/50 hover:bg-white/80 text-purple-700 transition-all duration-200 border border-white/30 shadow-sm hover:shadow-md"
+                    className="px-6 py-2.5 text-xs font-black uppercase tracking-widest rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all"
                   >
-                    Sign Out
+                    log out
                   </button>
                 </div>
               </>
             ) : (
               <button 
                 onClick={signInWithGoogle}
-                className="flex items-center px-5 py-2.5 text-sm font-medium rounded-full text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                className="flex items-center px-8 py-3 text-sm font-black uppercase tracking-widest rounded-full text-white bg-black hover:bg-gray-800 shadow-xl transition-all transform hover:-translate-y-1 active:scale-95"
               >
-                Sign in with Google
+                Sign in 🌸
               </button>
             )}
           </div>
