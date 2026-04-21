@@ -15,13 +15,35 @@ def analyze_vibe(text: str) -> dict:
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         logger.error("GEMINI_API_KEY environment variable is not set.")
-        return _fallback_vibe()
+        return _fallback_vibe("No API key")
 
     try:
         genai.configure(api_key=api_key)
         
-        # Using gemini-1.5-flash as the fast and capable model 
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Try multiple model names for compatibility
+        model = None
+        model_names = [
+            'gemini-2.0-flash',
+            'gemini-1.5-flash',
+            'gemini-1.5-flash-latest',
+            'gemini-pro',
+        ]
+        
+        last_error = None
+        for model_name in model_names:
+            try:
+                model = genai.GenerativeModel(model_name)
+                # Quick test to verify the model works
+                logger.info(f"Trying model: {model_name}")
+                break
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Model {model_name} not available: {e}")
+                continue
+        
+        if model is None:
+            logger.error(f"No Gemini model available. Last error: {last_error}")
+            return _fallback_vibe(f"No model available: {last_error}")
         
         prompt = (
             "You are a vibe analyzer. Given a mood description, return "
@@ -37,6 +59,8 @@ def analyze_vibe(text: str) -> dict:
         
         response = model.generate_content(full_text)
         response_text = response.text.strip()
+        
+        logger.info(f"Gemini raw response: {response_text[:200]}")
         
         # Remove markdown ticks if Gemini accidentally includes them
         if response_text.startswith("```json"):
@@ -57,8 +81,9 @@ def analyze_vibe(text: str) -> dict:
         # Validate that we got actual data
         if not isinstance(tags, list) or len(tags) == 0 or not spotify_query:
             logger.warning("Empty or invalid data format returned from Gemini, using fallback.")
-            return _fallback_vibe()
+            return _fallback_vibe("Empty response from model")
             
+        logger.info(f"Gemini analysis successful: tags={tags}")
         return {
             "tags": tags,
             "spotify_query": spotify_query
@@ -66,13 +91,14 @@ def analyze_vibe(text: str) -> dict:
         
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse JSON response from Gemini: {e}. Response was: {response_text}")
-        return _fallback_vibe()
+        return _fallback_vibe(f"JSON parse error: {e}")
     except Exception as e:
         logger.error(f"Error calling Gemini API: {e}")
-        return _fallback_vibe()
+        return _fallback_vibe(f"API error: {e}")
 
-def _fallback_vibe() -> dict:
+def _fallback_vibe(reason: str = "unknown") -> dict:
     """Provides safe fallback values for error handling."""
+    logger.warning(f"Using fallback vibe. Reason: {reason}")
     return {
         "tags": ["lo-fi", "chill", "atmospheric", "relaxing"],
         "spotify_query": "lofi chill beats"

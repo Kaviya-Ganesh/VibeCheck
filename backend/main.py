@@ -37,6 +37,17 @@ async def health_check():
         )
     }
 
+@app.get("/debug/vibe")
+async def debug_vibe():
+    """Test endpoint to verify Gemini API is working. Visit in browser to check."""
+    result = analyze_vibe("I feel like sitting in a cozy cafe on a rainy day")
+    is_fallback = result.get("tags") == ["lo-fi", "chill", "atmospheric", "relaxing"]
+    return {
+        "result": result,
+        "is_fallback": is_fallback,
+        "note": "If is_fallback is true, Gemini API is not working. Check Render logs."
+    }
+
 @app.post("/vibe", response_model=VibeResponse)
 async def generate_vibe(request: VibeRequest):
     """
