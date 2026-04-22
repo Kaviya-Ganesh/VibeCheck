@@ -2,7 +2,7 @@
 
 > **Your vibe is your digital signature.**
 
-VibeCheck is a full-stack AI-powered mood board and playlist generator. Describe how you feel, and VibeCheck uses **Google Gemini AI** to analyze your mood, generate a unique AI mood board image, and suggest a matching Spotify playlist — all in seconds.
+VibeCheck is a full-stack AI-powered mood board and playlist generator. Describe how you feel, and VibeCheck uses **Groq AI (Llama 3.3 70B)** to analyze your mood, generate a unique AI mood board image, and suggest a matching Spotify playlist — all in seconds.
 
 🌐 **Live App** → [vibecheck-bb61f.web.app](https://vibecheck-bb61f.web.app)
 
@@ -10,7 +10,7 @@ VibeCheck is a full-stack AI-powered mood board and playlist generator. Describe
 
 ## ✨ Features
 
-- 🎨 **AI Vibe Analysis** — Gemini AI extracts aesthetic tags like *cottagecore*, *golden hour*, *dark academia*
+- 🎨 **AI Vibe Analysis** — Groq AI (Llama 3.3 70B) extracts aesthetic tags like *cottagecore*, *golden hour*, *dark academia*
 - 🖼️ **AI Mood Board** — Unique images generated in real-time via Pollinations.ai
 - 🎵 **Spotify Match** — Auto-generates a Spotify search query for your vibe
 - 🔐 **Google Sign-In** — OAuth 2.0 authentication via Firebase
@@ -26,7 +26,7 @@ VibeCheck is a full-stack AI-powered mood board and playlist generator. Describe
 
 **Backend** — Python 3.11 · FastAPI · Uvicorn · Pydantic · Docker · Render
 
-**Cloud Services** — Firebase Hosting (CDN) · Firebase Auth (OAuth) · Cloud Firestore (NoSQL DB) · Gemini API (AI) · Pollinations.ai (Image Gen) · Render (Docker Hosting)
+**Cloud Services** — Firebase Hosting (CDN) · Firebase Auth (OAuth) · Cloud Firestore (NoSQL DB) · Groq API (AI) · Pollinations.ai (Image Gen) · Render (Docker Hosting)
 
 ---
 
@@ -35,8 +35,8 @@ VibeCheck is a full-stack AI-powered mood board and playlist generator. Describe
 ```
 User types mood → Frontend sends POST to Backend API
                          ↓
-              Backend calls Gemini AI (REST API)
-              Gemini returns aesthetic tags + Spotify query
+              Backend calls Groq AI (Llama 3.3 70B)
+              Groq returns aesthetic tags + Spotify query
                          ↓
               Backend builds Pollinations.ai image URL
               Backend builds Spotify search URL
@@ -57,7 +57,7 @@ VibeCheck/
 │
 ├── backend/
 │   ├── main.py                  # FastAPI routes + CORS
-│   ├── gemini.py                # Gemini REST API calls
+│   ├── groq_llm.py              # Groq AI API calls (Llama 3.3 70B)
 │   ├── image.py                 # Pollinations.ai URL builder
 │   ├── spotify.py               # Spotify search URL builder
 │   ├── firestore_client.py      # Firestore CRUD operations
@@ -96,7 +96,7 @@ pip install -r requirements.txt
 Create `backend/.env`:
 
 ```
-GEMINI_API_KEY=your_key_here
+GROQ_API_KEY=your_key_here
 GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json
 ```
 
@@ -142,7 +142,7 @@ cd frontend && npm run build && npx firebase-tools deploy --only hosting
 Push to GitHub → Render auto-detects → Builds Docker image → Deploys container
 
 Environment variables on Render:
-- `GEMINI_API_KEY` — Google AI Studio API key
+- `GROQ_API_KEY` — Groq API key (get one free at console.groq.com)
 - `FIREBASE_CREDENTIALS_JSON` — Base64-encoded service account JSON
 
 ---
@@ -180,7 +180,7 @@ curl -X POST https://vibecheck-api-c1rc.onrender.com/vibe \
 | Problem | Fix |
 |---------|-----|
 | Blank white screen | Firebase keys missing in `frontend/.env` |
-| Same tags every time | `GEMINI_API_KEY` not set on Render |
+| Same tags every time | `GROQ_API_KEY` not set on Render |
 | Image won't load | Pollinations.ai is busy — click "try again" |
 | Archive is empty | Backend redeploying — wait 2 min and retry |
 | Slow first load | Render free tier cold start (~30s) |

@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 load_dotenv()
 
 from models import VibeRequest, VibeResponse, SavedVibe
-from gemini import analyze_vibe
+from groq_llm import analyze_vibe
 from image import generate_mood_image
 from spotify import build_spotify_embed
 from firestore_client import save_vibe, get_user_vibes
@@ -30,7 +30,7 @@ async def health_check():
     import os
     return {
         "status": "ok",
-        "gemini_configured": bool(os.environ.get("GEMINI_API_KEY")),
+        "groq_configured": bool(os.environ.get("GROQ_API_KEY")),
         "firebase_configured": bool(
             os.environ.get("FIREBASE_CREDENTIALS_JSON") or 
             os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
@@ -39,13 +39,13 @@ async def health_check():
 
 @app.get("/debug/vibe")
 async def debug_vibe():
-    """Test endpoint to verify Gemini API is working. Visit in browser to check."""
+    """Test endpoint to verify Groq API is working. Visit in browser to check."""
     result = analyze_vibe("I feel like sitting in a cozy cafe on a rainy day")
     is_fallback = result.get("tags") == ["lo-fi", "chill", "atmospheric", "relaxing"]
     return {
         "result": result,
         "is_fallback": is_fallback,
-        "note": "If is_fallback is true, Gemini API is not working. Check Render logs."
+        "note": "If is_fallback is true, Groq API is not working. Check Render logs."
     }
 
 @app.post("/vibe", response_model=VibeResponse)
@@ -56,7 +56,7 @@ async def generate_vibe(request: VibeRequest):
     Returns the assembled VibeResponse without saving to Firestore.
     """
     try:
-        # 1. Analyze text with Gemini
+        # 1. Analyze text with Groq LLM
         ai_result = analyze_vibe(request.text)
         
         tags = ai_result.get("tags", [])
